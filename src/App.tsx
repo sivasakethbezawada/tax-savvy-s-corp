@@ -12,6 +12,7 @@ import Footer from "./components/layout/Footer";
 // Lazy load pages for code splitting
 const Index = lazy(() => import("./pages/Index"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const ReasonableSalary = lazy(() => import("./pages/ReasonableSalary"));
 
 // Loading component
 const LoadingFallback = () => (
@@ -41,6 +42,7 @@ const App = () => (
             <Suspense fallback={<LoadingFallback />}>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/reasonable-salary" element={<ReasonableSalary />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
