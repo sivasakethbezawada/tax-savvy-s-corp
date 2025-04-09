@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,14 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Custom tax app colors
+				tax: {
+					primary: '#1e3a8a', // Navy blue
+					secondary: '#475569', // Slate gray
+					accent: '#16a34a', // Money green
+					background: '#f8fafc', // Light gray
+					text: '#1e293b', // Dark slate
 				}
 			},
 			borderRadius: {
