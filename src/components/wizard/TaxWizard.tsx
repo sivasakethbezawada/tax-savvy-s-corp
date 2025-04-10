@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ import {
   ExpensesFormData,
   SalaryFormData
 } from "@/context/TaxDataContext";
+import SubmitTaxData from "@/components/forms/SubmitTaxData";
 
 const SCorpExpensesForm = React.lazy(() => import("@/components/forms/SCorpExpensesForm"));
 const ReasonableSalaryForm = React.lazy(() => import("@/components/forms/ReasonableSalaryForm"));
@@ -184,6 +186,7 @@ const TaxWizard: React.FC = () => {
   };
 
   const activeStep = steps.find((step) => step.id === currentStep);
+  const allStepsCompleted = steps.every(step => completedSteps.includes(step.id));
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-8">
@@ -242,6 +245,13 @@ const TaxWizard: React.FC = () => {
 
       <div className="mb-8">
         {activeStep && activeStep.component}
+        
+        {allStepsCompleted && (
+          <div className="mt-12 border-t pt-8">
+            <h3 className="text-xl font-bold text-center mb-6">Ready to Submit Your Tax Data</h3>
+            <SubmitTaxData />
+          </div>
+        )}
       </div>
 
       <div className="flex justify-between mt-8">
