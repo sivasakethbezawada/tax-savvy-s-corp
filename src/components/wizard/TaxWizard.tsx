@@ -1,8 +1,7 @@
-
 import React from "react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Check, Circle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check } from "lucide-react";
 import PersonalInfoForm from "@/components/forms/PersonalInfoForm";
 import IncomeForm from "@/components/forms/IncomeForm";
 import { cn } from "@/lib/utils";
@@ -16,14 +15,14 @@ import {
   validatePersonalInfo,
   validateIncome,
   validateExpenses,
-  validateSalary
+  validateSalary,
+  ExpensesFormData,
+  SalaryFormData
 } from "@/context/TaxDataContext";
 
-// Import the SCorpExpensesForm component
 const SCorpExpensesForm = React.lazy(() => import("@/components/forms/SCorpExpensesForm"));
 const ReasonableSalaryForm = React.lazy(() => import("@/components/forms/ReasonableSalaryForm"));
 
-// Define step interface
 interface WizardStep {
   id: number;
   title: string;
@@ -41,7 +40,6 @@ const TaxWizard: React.FC = () => {
     addCompletedStep 
   } = useWizardState();
 
-  // Define steps
   const steps: WizardStep[] = [
     {
       id: 1,
@@ -83,7 +81,28 @@ const TaxWizard: React.FC = () => {
         <React.Suspense fallback={<div>Loading...</div>}>
           <SCorpExpensesForm
             onSubmit={(data) => {
-              setExpenses(dispatch, data);
+              const expenseData: ExpensesFormData = {
+                rent: data.rent || "",
+                utilities: data.utilities || "",
+                supplies: data.supplies || "",
+                insurance: data.insurance || "",
+                advertising: data.advertising || "",
+                maintenance: data.maintenance || "",
+                ownerWithdrawals: data.ownerWithdrawals || "",
+                shareholderDistributions: data.shareholderDistributions || "",
+                employeeSalaries: data.employeeSalaries || "",
+                employeeBenefits: data.employeeBenefits || "",
+                payrollTaxes: data.payrollTaxes || "",
+                businessTravel: data.businessTravel || "",
+                mileage: data.mileage || "",
+                vehicleExpenses: data.vehicleExpenses || "",
+                accounting: data.accounting || "",
+                legal: data.legal || "",
+                consulting: data.consulting || "",
+                otherExpenses: data.otherExpenses || ""
+              };
+              
+              setExpenses(dispatch, expenseData);
               addCompletedStep(3);
               handleNext();
             }}
@@ -101,11 +120,29 @@ const TaxWizard: React.FC = () => {
         <React.Suspense fallback={<div>Loading...</div>}>
           <ReasonableSalaryForm
             onSubmit={(data) => {
-              setSalary(dispatch, data);
+              const salaryData: SalaryFormData = {
+                industry: data.industry || "",
+                yearsExperience: data.experience || "",
+                location: data.location || "",
+                hoursPerWeek: data.hoursPerWeek?.toString() || "",
+                comparableSalary: data.comparableSalary || "",
+                calculatedMinSalary: "",
+                calculatedMaxSalary: "",
+                selectedSalary: data.selectedSalary || ""
+              };
+              
+              setSalary(dispatch, salaryData);
               addCompletedStep(4);
               handleComplete();
             }}
-            defaultValues={state.salary || undefined}
+            defaultValues={state.salary ? {
+              industry: state.salary.industry,
+              experience: state.salary.yearsExperience,
+              location: state.salary.location,
+              hoursPerWeek: parseInt(state.salary.hoursPerWeek) || 40,
+              comparableSalary: state.salary.comparableSalary,
+              selectedSalary: state.salary.selectedSalary
+            } : undefined}
             className="animate-fade-in"
           />
         </React.Suspense>
@@ -113,10 +150,8 @@ const TaxWizard: React.FC = () => {
     },
   ];
 
-  // Calculate progress percentage
   const progressPercentage = ((currentStep - 1) / (steps.length - 1)) * 100;
 
-  // Navigation handlers
   const handlePrevious = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
@@ -125,24 +160,20 @@ const TaxWizard: React.FC = () => {
 
   const handleNext = () => {
     if (currentStep < steps.length) {
-      // Move to next step
       setCurrentStep(currentStep + 1);
     }
   };
 
   const handleComplete = () => {
-    // Mark all steps as completed
     const allStepsCompleted = Array.from(
       { length: steps.length },
       (_, i) => i + 1
     );
     setCompletedSteps(allStepsCompleted);
     console.log("Tax wizard completed!");
-    // Here you could implement additional completion logic
   };
 
   const handleStepClick = (stepNumber: number) => {
-    // Only allow clicking on completed steps or the next available step
     if (
       completedSteps.includes(stepNumber) ||
       stepNumber === currentStep ||
@@ -152,7 +183,6 @@ const TaxWizard: React.FC = () => {
     }
   };
 
-  // Get current step
   const activeStep = steps.find((step) => step.id === currentStep);
 
   return (
@@ -162,12 +192,10 @@ const TaxWizard: React.FC = () => {
           S Corp Tax Calculator
         </h2>
 
-        {/* Progress bar */}
         <div className="mb-6">
           <Progress value={progressPercentage} className="h-2" />
         </div>
 
-        {/* Step indicators */}
         <div className="flex justify-between items-center mb-8">
           {steps.map((step) => (
             <div
@@ -212,12 +240,10 @@ const TaxWizard: React.FC = () => {
         </div>
       </div>
 
-      {/* Current step content */}
       <div className="mb-8">
         {activeStep && activeStep.component}
       </div>
 
-      {/* Navigation buttons */}
       <div className="flex justify-between mt-8">
         <Button
           variant="outline"
