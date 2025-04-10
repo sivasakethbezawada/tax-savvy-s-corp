@@ -90,18 +90,19 @@ const TaxWizard: React.FC = () => {
                 insurance: data.insurance || "",
                 advertising: data.advertising || "",
                 maintenance: data.maintenance || "",
-                ownerWithdrawals: data.ownerWithdrawals || "",
-                shareholderDistributions: data.shareholderDistributions || "",
+                // Map the correct property names from SCorpExpensesForm to our ExpensesFormData type
+                ownerWithdrawals: data.ownerSalary || "",
+                shareholderDistributions: data.distributions || "",
                 employeeSalaries: data.employeeSalaries || "",
                 employeeBenefits: data.employeeBenefits || "",
                 payrollTaxes: data.payrollTaxes || "",
-                businessTravel: data.businessTravel || "",
+                businessTravel: data.travel || "",
                 mileage: data.mileage || "",
-                vehicleExpenses: data.vehicleExpenses || "",
+                vehicleExpenses: data.carExpenses || "",
                 accounting: data.accounting || "",
                 legal: data.legal || "",
                 consulting: data.consulting || "",
-                otherExpenses: data.otherExpenses || ""
+                otherExpenses: data.professionalFees || ""
               };
               
               setExpenses(dispatch, expenseData);

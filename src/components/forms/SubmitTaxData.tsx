@@ -77,7 +77,7 @@ interface SubmitTaxDataProps {
   accessKey?: string; // Optional prop to allow override of the default access key
 }
 
-const SubmitTaxData: React.FC<SubmitTaxDataProps> = ({ accessKey = "" }) => {
+const SubmitTaxData: React.FC<SubmitTaxDataProps> = ({ accessKey = "0f3ed5af-8cc3-45b0-b335-c498b7221f94" }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
@@ -120,10 +120,10 @@ const SubmitTaxData: React.FC<SubmitTaxDataProps> = ({ accessKey = "" }) => {
         ssn: state.personalInfo?.ssn || "",
         filingStatus: state.personalInfo?.filingStatus || "",
         
-        // Income Information
-        totalIncome: state.income?.totalIncome || "",
-        businessIncome: state.income?.businessIncome || "",
-        investmentIncome: state.income?.investmentIncome || "",
+        // Income Information - map the correct income properties
+        totalIncome: state.income?.businessRevenue || "",
+        businessIncome: state.income?.businessRevenue || "",
+        investmentIncome: state.income?.dividendIncome || "",
         otherIncome: state.income?.otherIncome || "",
         
         // Expenses Information
