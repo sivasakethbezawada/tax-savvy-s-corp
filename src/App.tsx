@@ -8,6 +8,7 @@ import { Suspense, lazy } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
+import { TaxDataProvider } from "./context/TaxDataContext";
 
 // Lazy load pages for code splitting
 const Index = lazy(() => import("./pages/Index"));
@@ -36,20 +37,22 @@ const App = () => (
       <Toaster />
       <Sonner />
       <ErrorBoundary>
-        <BrowserRouter>
-          <Header />
-          <main className="flex-1">
-            <Suspense fallback={<LoadingFallback />}>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/reasonable-salary" element={<ReasonableSalary />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-          </main>
-          <Footer />
-        </BrowserRouter>
+        <TaxDataProvider>
+          <BrowserRouter>
+            <Header />
+            <main className="flex-1">
+              <Suspense fallback={<LoadingFallback />}>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/reasonable-salary" element={<ReasonableSalary />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </main>
+            <Footer />
+          </BrowserRouter>
+        </TaxDataProvider>
       </ErrorBoundary>
     </TooltipProvider>
   </QueryClientProvider>

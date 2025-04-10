@@ -1,15 +1,27 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Check, Circle } from "lucide-react";
 import PersonalInfoForm from "@/components/forms/PersonalInfoForm";
 import IncomeForm from "@/components/forms/IncomeForm";
-import ReasonableSalaryForm from "@/components/forms/ReasonableSalaryForm";
 import { cn } from "@/lib/utils";
+import { 
+  useTaxData, 
+  useWizardState, 
+  setPersonalInfo, 
+  setIncome, 
+  setExpenses, 
+  setSalary,
+  validatePersonalInfo,
+  validateIncome,
+  validateExpenses,
+  validateSalary
+} from "@/context/TaxDataContext";
 
 // Import the SCorpExpensesForm component
 const SCorpExpensesForm = React.lazy(() => import("@/components/forms/SCorpExpensesForm"));
+const ReasonableSalaryForm = React.lazy(() => import("@/components/forms/ReasonableSalaryForm"));
 
 // Define step interface
 interface WizardStep {
@@ -20,6 +32,15 @@ interface WizardStep {
 }
 
 const TaxWizard: React.FC = () => {
+  const { state, dispatch } = useTaxData();
+  const { 
+    currentStep, 
+    completedSteps, 
+    setCurrentStep, 
+    setCompletedSteps, 
+    addCompletedStep 
+  } = useWizardState();
+
   // Define steps
   const steps: WizardStep[] = [
     {
@@ -28,7 +49,12 @@ const TaxWizard: React.FC = () => {
       description: "Enter your personal and contact details",
       component: (
         <PersonalInfoForm
-          onSubmit={() => handleNext()}
+          onSubmit={(data) => {
+            setPersonalInfo(dispatch, data);
+            addCompletedStep(1);
+            handleNext();
+          }}
+          defaultValues={state.personalInfo || undefined}
           className="animate-fade-in"
         />
       ),
@@ -39,7 +65,12 @@ const TaxWizard: React.FC = () => {
       description: "Enter your income details",
       component: (
         <IncomeForm
-          onSubmit={() => handleNext()}
+          onSubmit={(data) => {
+            setIncome(dispatch, data);
+            addCompletedStep(2);
+            handleNext();
+          }}
+          defaultValues={state.income || undefined}
           className="animate-fade-in"
         />
       ),
@@ -51,7 +82,12 @@ const TaxWizard: React.FC = () => {
       component: (
         <React.Suspense fallback={<div>Loading...</div>}>
           <SCorpExpensesForm
-            onSubmit={() => handleNext()}
+            onSubmit={(data) => {
+              setExpenses(dispatch, data);
+              addCompletedStep(3);
+              handleNext();
+            }}
+            defaultValues={state.expenses || undefined}
             className="animate-fade-in"
           />
         </React.Suspense>
@@ -62,17 +98,20 @@ const TaxWizard: React.FC = () => {
       title: "Reasonable Salary",
       description: "Calculate your reasonable salary",
       component: (
-        <ReasonableSalaryForm
-          onSubmit={() => handleComplete()}
-          className="animate-fade-in"
-        />
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <ReasonableSalaryForm
+            onSubmit={(data) => {
+              setSalary(dispatch, data);
+              addCompletedStep(4);
+              handleComplete();
+            }}
+            defaultValues={state.salary || undefined}
+            className="animate-fade-in"
+          />
+        </React.Suspense>
       ),
     },
   ];
-
-  // State for current step
-  const [currentStep, setCurrentStep] = useState(1);
-  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
   // Calculate progress percentage
   const progressPercentage = ((currentStep - 1) / (steps.length - 1)) * 100;
@@ -86,10 +125,6 @@ const TaxWizard: React.FC = () => {
 
   const handleNext = () => {
     if (currentStep < steps.length) {
-      // Mark current step as completed
-      if (!completedSteps.includes(currentStep)) {
-        setCompletedSteps([...completedSteps, currentStep]);
-      }
       // Move to next step
       setCurrentStep(currentStep + 1);
     }
